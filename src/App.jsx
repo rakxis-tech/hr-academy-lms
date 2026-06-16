@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
+import Pricing from './pages/Pricing';
+import Courses from './pages/Courses';
 
 // Placeholder pages for routing
 const PlaceholderPage = ({ title }) => (
@@ -33,8 +35,8 @@ function App() {
         <main style={{ flex: 1, marginTop: 'var(--nav-height)', position: 'relative', zIndex: 1 }}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<PlaceholderPage title="Course Catalog" />} />
-            <Route path="/pricing" element={<PlaceholderPage title="Pricing" />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/auth" element={<PlaceholderPage title="Login / Register" />} />
             <Route path="/dashboard" element={<PlaceholderPage title="User Dashboard" />} />
           </Routes>
