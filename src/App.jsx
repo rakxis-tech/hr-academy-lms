@@ -7,6 +7,7 @@ import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import CoursePlayer from './pages/CoursePlayer';
 import Dashboard from './pages/Dashboard';
+import Auth from './pages/Auth';
 import { useLocation } from 'react-router-dom';
 
 // Placeholder pages for routing
@@ -53,7 +54,7 @@ function AppLayout() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:slug" element={<CourseDetail />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/auth" element={<PlaceholderPage title="Login / Register" />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </main>
