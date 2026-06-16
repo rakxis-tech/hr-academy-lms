@@ -1,120 +1,76 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import './index.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      {/* Mesh Background — Gradient Blobs */}
+      <div className="mesh-bg">
+        <div className="blob blob--orange"></div>
+        <div className="blob blob--teal"></div>
+        <div className="blob blob--cream"></div>
+      </div>
 
-      <div className="ticks"></div>
+      {/* Noise Texture Overlay */}
+      <div className="noise-overlay"></div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {/* App Content */}
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
+        <div className="animate-float" style={{ fontSize: '74px', marginBottom: '1rem' }}>💥</div>
+        
+        <p className="label animate-slide-up" style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+          PROJECT 2027 · HR L&D PLATFORM
+        </p>
+        
+        <h1 className="text-gradient animate-slide-up" style={{ fontSize: 'clamp(2.4rem, 6vw, 5rem)', marginBottom: '0.8rem' }}>
+          Obrak-Abrik 2027
+        </h1>
+        
+        <p className="animate-slide-up" style={{ color: 'var(--text-2)', fontSize: 'clamp(0.9rem, 1.5vw, 1.2rem)', maxWidth: '580px', marginBottom: '1.5rem' }}>
+          Platform Learning & Development HR yang Ngobrak-abrik Pasar Cirebon → Jawa Barat
+        </p>
+        
+        <div className="flex gap-sm flex-wrap justify-center animate-slide-up" style={{ marginBottom: '2rem' }}>
+          <span className="tag tag--orange">🎓 HR Courses</span>
+          <span className="tag tag--teal">🤖 AI-Powered</span>
+          <span className="tag tag--cream">📍 Cirebon → Jabar</span>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        {/* Tier Cards Preview */}
+        <div className="grid grid-3 gap-md" style={{ maxWidth: '800px', width: '100%', marginBottom: '2rem' }}>
+          <div className="card card--tier-1 animate-slide-up" style={{ textAlign: 'center' }}>
+            <p className="font-display text-orange" style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>🔰 Tier 1 · Foundation</p>
+            <p className="text-muted" style={{ fontSize: '0.77rem', marginBottom: '0.5rem' }}>Rekrutmen, Admin HR, Payroll Dasar</p>
+            <p className="text-orange font-display" style={{ fontSize: '1.1rem' }}>Rp 299k</p>
+          </div>
+          <div className="card card--tier-2 animate-slide-up" style={{ textAlign: 'center' }}>
+            <p className="font-display text-teal" style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>⭐ Tier 2 · Advanced</p>
+            <p className="text-muted" style={{ fontSize: '0.77rem', marginBottom: '0.5rem' }}>Psikometri, BEI, People Analytics</p>
+            <p className="text-teal font-display" style={{ fontSize: '1.1rem' }}>Rp 599k</p>
+          </div>
+          <div className="card card--tier-3 animate-slide-up" style={{ textAlign: 'center' }}>
+            <p className="font-display text-cream" style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>👑 Tier 3 · Mastermind</p>
+            <p className="text-muted" style={{ fontSize: '0.77rem', marginBottom: '0.5rem' }}>Semua + AI + 1-on-1 Konsul</p>
+            <p className="text-cream font-display" style={{ fontSize: '1.1rem' }}>Rp 1.499k</p>
+          </div>
+        </div>
+
+        {/* Button Preview */}
+        <div className="flex gap-md flex-wrap justify-center animate-slide-up">
+          <button className="btn btn--primary btn--lg">Mulai Belajar</button>
+          <button className="btn btn--secondary btn--lg">Lihat Kurikulum</button>
+        </div>
+
+        {/* Progress Bar Preview */}
+        <div style={{ maxWidth: '400px', width: '100%', marginTop: '2rem' }} className="animate-slide-up">
+          <div className="flex justify-between" style={{ marginBottom: '0.3rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-2)' }}>Progress Belajar</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--orange)' }}>65%</span>
+          </div>
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: '65%' }}></div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

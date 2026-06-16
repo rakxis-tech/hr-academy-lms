@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="slides-format" content="viewport">
+    <title>Obrak-Abrik 2027 — HR L&D Platform · Project 2027 Pitch Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#18181B;--bg-deep:#0F0F11;--surface:#27272A;--text:#FAFAFA;--text2:#D4D4D8;--muted:#A1A1AA;--or:#F97316;--tl:#14B8A6;--yr:#FEF3C7;--glass:rgba(255,255,255,0.05);--gborder:rgba(255,255,255,0.08);--vignette:rgba(0,0,0,0.45);--font-d:'Archivo Black',sans-serif;--font-b:'DM Sans',sans-serif;}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html,body{background:var(--bg);overflow:hidden;height:100vh;width:100vw;}
+        body{font-family:var(--font-b);color:var(--text);}
+        .deck{width:100vw;height:100vh;position:relative;}
+        .slide{position:absolute;top:0;left:0;width:100%;height:100%;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:scale(0.95);transition:opacity .7s ease,transform .7s ease;pointer-events:none;overflow:hidden;}
+        .slide.active{opacity:1;transform:scale(1);pointer-events:all;}
+        .slide>.content{position:relative;z-index:2;width:100%;max-width:1100px;padding:clamp(1.2rem,3.5vw,3.5rem);}
+        .nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:100;background:var(--glass);backdrop-filter:blur(12px);padding:9px 22px;border-radius:40px;border:1px solid var(--gborder);}
+        .nbtn{width:38px;height:38px;border:none;background:var(--glass);color:var(--or);border-radius:50%;font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s;}
+        .nbtn:hover{background:var(--gborder);}
+        .dots{display:flex;gap:7px;}
+        .dot{width:9px;height:9px;border-radius:50%;background:var(--gborder);cursor:pointer;transition:background .3s,transform .3s;}
+        .dot.active{background:var(--or);transform:scale(1.3);}
+        .cnt{font-size:.78rem;color:var(--muted);min-width:36px;text-align:center;}
+        .reveal{opacity:0;transform:translateY(18px);}
+        @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+        @keyframes fs{0%{transform:translate(0,0) scale(1);}25%{transform:translate(55px,-45px) scale(1.1);}50%{transform:translate(-35px,38px) scale(0.92);}75%{transform:translate(45px,18px) scale(1.07);}100%{transform:translate(0,0) scale(1);}}
+        @keyframes fd{0%{transform:translate(0,0) scale(1) rotate(0deg);}33%{transform:translate(-45px,-55px) scale(1.13) rotate(3deg);}66%{transform:translate(38px,28px) scale(0.89) rotate(-2deg);}100%{transform:translate(0,0) scale(1) rotate(0deg);}}
+        @keyframes gp{0%,100%{text-shadow:0 0 20px rgba(249,115,22,.5),0 0 40px rgba(249,115,22,.2);}50%{text-shadow:0 0 30px rgba(249,115,22,.8),0 0 60px rgba(249,115,22,.3);}}
+        .gp{animation:gp 3s ease-in-out infinite;}
+        .mesh{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+        .blob{position:absolute;border-radius:50%;filter:blur(80px);animation:fs 12s ease-in-out infinite;}
+        .blob:nth-child(2){animation:fd 16s ease-in-out infinite;}
+        .blob:nth-child(3){animation:fs 20s ease-in-out infinite reverse;}
+        .slide::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-size:256px 256px;opacity:.03;mix-blend-mode:overlay;}
+        .slide::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,var(--vignette) 100%);}
+        /* util classes */
+        .tag{padding:.35rem .9rem;border-radius:999px;font-size:.8rem;}
+        .card{background:rgba(255,255,255,.04);border:1px solid var(--gborder);border-radius:14px;padding:1.1rem;}
+        .lbl{font-size:.75rem;letter-spacing:5px;text-transform:uppercase;}
+        .hdg{font-family:var(--font-d);line-height:1.1;}
+        .bar-track{background:rgba(255,255,255,.08);border-radius:999px;height:9px;overflow:hidden;margin-top:4px;}
+        .bar-fill{height:100%;border-radius:999px;background:linear-gradient(to right,#F97316,#14B8A6);width:0;transition:width .8s ease;}
+        .tl-line{position:absolute;left:18px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#F97316,#14B8A6);}
+        .tl-dot{width:13px;height:13px;border-radius:50%;background:#F97316;box-shadow:0 0 9px rgba(249,115,22,.6);flex-shrink:0;}
+        .cost-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem .8rem;border-radius:7px;font-size:.85rem;}
+        .cost-row:nth-child(odd){background:rgba(255,255,255,.03);}
+    </style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ─── SLIDE 1: TITLE ─── -->
+<div class="slide active" data-slide="1">
+  <div class="mesh">
+    <div class="blob" style="width:500px;height:500px;top:-110px;right:-100px;background:#F97316;opacity:.14;"></div>
+    <div class="blob" style="width:360px;height:360px;bottom:-80px;left:-60px;background:#14B8A6;opacity:.11;"></div>
+    <div class="blob" style="width:200px;height:200px;top:42%;left:18%;background:#FEF3C7;opacity:.06;"></div>
+  </div>
+  <canvas class="pc" style="position:absolute;inset:0;z-index:1;"></canvas>
+  <div class="content" style="text-align:center;">
+    <div class="reveal" style="font-size:74px;animation:float 3s ease-in-out infinite;">💥</div>
+    <p class="reveal lbl" style="color:var(--muted);margin:.8rem 0 .4rem;">Project 2027 · Bisnis Pitch Deck · Back Bisnis #1</p>
+    <h1 class="reveal hdg" style="font-size:clamp(2.4rem,6vw,5rem);background:linear-gradient(135deg,#F97316,#FEF3C7,#14B8A6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:.4rem 0 .8rem;">Obrak-Abrik 2027</h1>
+    <p class="reveal" style="font-size:clamp(.9rem,1.5vw,1.2rem);color:var(--text2);max-width:580px;margin:0 auto 1.4rem;">Platform Learning & Development HR yang Ngobrak-abrik Pasar Cirebon → Jawa Barat</p>
+    <div class="reveal" style="display:inline-flex;gap:.9rem;flex-wrap:wrap;justify-content:center;">
+      <span class="tag" style="background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);color:#F97316;">🎓 HR Courses</span>
+      <span class="tag" style="background:rgba(20,184,166,.15);border:1px solid rgba(20,184,166,.3);color:#14B8A6;">🤖 AI-Powered</span>
+      <span class="tag" style="background:rgba(254,243,199,.1);border:1px solid rgba(254,243,199,.2);color:#FEF3C7;">📍 Cirebon → Jabar</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 2: PROBLEM ─── -->
+<div class="slide" data-slide="2">
+  <div class="mesh">
+    <div class="blob" style="width:400px;height:400px;top:-90px;left:-70px;background:#F97316;opacity:.09;"></div>
+    <div class="blob" style="width:300px;height:300px;bottom:-60px;right:-40px;background:#14B8A6;opacity:.07;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--or);margin-bottom:.5rem;">THE PROBLEM</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.5rem,3.2vw,2.6rem);margin-bottom:1.3rem;">HR di Indonesia <span style="color:#F97316;">kekurangan akses</span> L&D berkualitas</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div class="reveal card" style="border-left:4px solid #F97316;">
+        <div style="font-size:1.7rem;margin-bottom:.4rem;">😤</div>
+        <h4 style="font-family:var(--font-d);color:#F97316;font-size:.9rem;margin-bottom:.3rem;">Mahal & Tidak Terjangkau</h4>
+        <p style="color:var(--muted);font-size:.82rem;">Kursus HR sertifikasi rata-rata Rp 3–7.5 juta. Kota tier-2 seperti Cirebon nyaris zero opsi lokal.</p>
+      </div>
+      <div class="reveal card" style="border-left:4px solid #14B8A6;">
+        <div style="font-size:1.7rem;margin-bottom:.4rem;">📚</div>
+        <h4 style="font-family:var(--font-d);color:#14B8A6;font-size:.9rem;margin-bottom:.3rem;">Kurikulum Usang</h4>
+        <p style="color:var(--muted);font-size:.82rem;">Mayoritas masih berbasis modul 2015–2018, belum menyentuh HR modern: AI rekrutmen, people analytics, psikometri digital.</p>
+      </div>
+      <div class="reveal card" style="border-left:4px solid #FEF3C7;">
+        <div style="font-size:1.7rem;margin-bottom:.4rem;">🗺️</div>
+        <h4 style="font-family:var(--font-d);color:#FEF3C7;font-size:.9rem;margin-bottom:.3rem;">Sentralisasi Jakarta</h4>
+        <p style="color:var(--muted);font-size:.82rem;">95%+ penyelenggara L&D berkualitas berbasis Jakarta. HR profesional Jabar harus bayar tiket & hotel tambahan.</p>
+      </div>
+      <div class="reveal card" style="border-left:4px solid rgba(249,115,22,.5);">
+        <div style="font-size:1.7rem;margin-bottom:.4rem;">🤝</div>
+        <h4 style="font-family:var(--font-d);color:#F97316;font-size:.9rem;margin-bottom:.3rem;">Zero Mentorship Nyata</h4>
+        <p style="color:var(--muted);font-size:.82rem;">Tidak ada platform lokal dengan konsultasi 1-on-1 dari praktisi HR aktif—bukan sekadar akademisi atau trainer korporat.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 3: COMPETITOR ANALYSIS ─── -->
+<div class="slide" data-slide="3">
+  <div class="mesh">
+    <div class="blob" style="width:420px;height:420px;top:-80px;right:-60px;background:#14B8A6;opacity:.09;"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-50px;left:-40px;background:#F97316;opacity:.07;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--tl);margin-bottom:.4rem;">COMPETITOR LANDSCAPE</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.4rem,3vw,2.3rem);margin-bottom:1rem;">Siapa yang Sudah Ada di Pasar?</h2>
+    <div style="overflow-x:auto;">
+    <table class="reveal" style="width:100%;border-collapse:collapse;font-size:.79rem;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--gborder);">
+          <th style="text-align:left;padding:.5rem .7rem;color:var(--or);font-family:var(--font-d);font-size:.78rem;">Brand</th>
+          <th style="text-align:left;padding:.5rem .7rem;color:var(--or);font-family:var(--font-d);font-size:.78rem;">Fokus Kurikulum</th>
+          <th style="text-align:left;padding:.5rem .7rem;color:var(--or);font-family:var(--font-d);font-size:.78rem;">Target Market</th>
+          <th style="text-align:left;padding:.5rem .7rem;color:var(--or);font-family:var(--font-d);font-size:.78rem;">Harga</th>
+          <th style="text-align:left;padding:.5rem .7rem;color:var(--or);font-family:var(--font-d);font-size:.78rem;">Kelemahan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+          <td style="padding:.5rem .7rem;"><strong style="color:#F97316;">@talentiv.id</strong><br><span style="color:var(--muted);font-size:.72rem;">Sekolah Karier HR</span></td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">Staff HR BNSP, Rekrutmen, Sertifikasi Kompetensi, Job Connect</td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">Fresh grad, career switcher ke HR & Finance</td>
+          <td style="padding:.5rem .7rem;color:#14B8A6;">Rp 1.5–5jt<br><span style="font-size:.7rem;color:var(--muted);">per program</span></td>
+          <td style="padding:.5rem .7rem;color:var(--muted);font-size:.77rem;">Fokus sertifikasi formal, minim aspek psikologi industri praktis</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04);background:rgba(255,255,255,.02);">
+          <td style="padding:.5rem .7rem;"><strong style="color:#14B8A6;">@hracademy.id</strong><br><span style="color:var(--muted);font-size:.72rem;">HR Academy Indo</span></td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">CHRP, CHCO, CHRS, CHCGM (BNSP Double Degree); Uraian Jabatan, Remunerasi, Rekrutmen, Audit HR</td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">Staff → Manager level, korporat mid-size</td>
+          <td style="padding:.5rem .7rem;color:#14B8A6;">Rp 3–7.5jt<br><span style="font-size:.7rem;color:var(--muted);">per sertifikasi</span></td>
+          <td style="padding:.5rem .7rem;color:var(--muted);font-size:.77rem;">Mahal, berbasis Jakarta offline, tidak ada AI/digital layer</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+          <td style="padding:.5rem .7rem;"><strong style="color:#FEF3C7;">@quantum.hr.id</strong><br><span style="color:var(--muted);font-size:.72rem;">PT Kompeten Indo</span></td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">Admin HR, Rekrutmen, Membuat KPI, Psikotest, skill admin perkantoran, Excel HR</td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">Mahasiswa, fresh grad, pemula HR; budget sangat terbatas</td>
+          <td style="padding:.5rem .7rem;color:#F97316;">Rp 50k–300k<br><span style="font-size:.7rem;color:var(--muted);">per sesi Zoom</span></td>
+          <td style="padding:.5rem .7rem;color:var(--muted);font-size:.77rem;">Sangat entry-level, tidak ada continuous learning path, sertifikat kurang prestisius</td>
+        </tr>
+        <tr>
+          <td style="padding:.5rem .7rem;"><strong style="color:rgba(249,115,22,.8);">@kelas_hr</strong><br><span style="color:var(--muted);font-size:.72rem;">Kelas HR Community</span></td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">Soft skills HR, Industrial Relations, Payroll, Kompensasi & Benefit, HRIS dasar</td>
+          <td style="padding:.5rem .7rem;color:var(--text2);">HR profesional yang ingin upgrade, komunitas HR online</td>
+          <td style="padding:.5rem .7rem;color:#14B8A6;">Rp 100–500k<br><span style="font-size:.7rem;color:var(--muted);">per kelas online</span></td>
+          <td style="padding:.5rem .7rem;color:var(--muted);font-size:.77rem;">Konten tersebar, tidak ada kurikulum terstruktur, zero mentorship 1-on-1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="reveal" style="margin-top:.8rem;padding:.7rem 1rem;background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);border-radius:9px;">
+      <p style="color:var(--text2);font-size:.82rem;">🎯 <strong style="color:#F97316;">White Space:</strong> Tidak ada kompetitor yang menggabungkan <strong>psikologi industri praktis + kurikulum terstruktur + AI layer + harga mid-range + coverage kota tier-2</strong>. Inilah positioning Obrak-Abrik 2027.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 4: SOLUTION ─── -->
+<div class="slide" data-slide="4">
+  <div class="mesh">
+    <div class="blob" style="width:440px;height:440px;top:-80px;right:-80px;background:#14B8A6;opacity:.1;"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-50px;left:-40px;background:#F97316;opacity:.08;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--tl);margin-bottom:.4rem;">THE SOLUTION</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.5rem,3.2vw,2.5rem);margin-bottom:.3rem;"><span style="color:#14B8A6;">Obrak-Abrik 2027</span> — L&D HR Platform</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-bottom:1.3rem;">Kurikulum psikologis, delivered digital, harga merakyat, dibangun dari Cirebon.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;">
+      <div class="reveal card" style="text-align:center;transition:transform .2s;cursor:default;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.5rem;">🎥</div>
+        <h4 style="font-family:var(--font-d);font-size:.9rem;color:#F97316;margin-bottom:.3rem;">Video On-Demand</h4>
+        <p style="color:var(--muted);font-size:.78rem;">Modul recorded bisa diakses kapan saja. Kurikulum psikologi industri praktis oleh Dandy.</p>
+      </div>
+      <div class="reveal card" style="text-align:center;transition:transform .2s;cursor:default;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.5rem;">💻</div>
+        <h4 style="font-family:var(--font-d);font-size:.9rem;color:#14B8A6;margin-bottom:.3rem;">Live Zoom Class</h4>
+        <p style="color:var(--muted);font-size:.78rem;">Kelas interaktif 2–4x/bulan. Q&A langsung, role-play case study, batch komunal.</p>
+      </div>
+      <div class="reveal card" style="text-align:center;transition:transform .2s;cursor:default;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.5rem;">🧠</div>
+        <h4 style="font-family:var(--font-d);font-size:.9rem;color:#FEF3C7;margin-bottom:.3rem;">Konsultasi 1-on-1</h4>
+        <p style="color:var(--muted);font-size:.78rem;">Sesi privat 60 menit dengan Dandy. Problem-solving HR spesifik. Maks 10 slot/bulan.</p>
+      </div>
+    </div>
+    <div class="reveal" style="padding:.8rem 1.1rem;background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);border-radius:10px;">
+      <p style="color:var(--text2);font-size:.85rem;">🤖 <strong style="color:#F97316;">AI Layer oleh Raka:</strong> Chatbot belajar via DeepSeek API (tanya materi, generate ringkasan, adaptive quiz) + WhatsApp funnel otomatis via n8n + LMS custom build low-cost.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 5: COMBINED CURRICULUM ─── -->
+<div class="slide" data-slide="5">
+  <div class="mesh">
+    <div class="blob" style="width:380px;height:380px;top:-70px;right:-60px;background:#F97316;opacity:.09;"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-50px;left:-40px;background:#14B8A6;opacity:.07;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--or);margin-bottom:.4rem;">KURIKULUM COMBINED + DIFFERENTIATED</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.3rem,2.8vw,2.2rem);margin-bottom:1rem;">Kurikulum: Ambil Gap Kompetitor, Isi dengan Dandy</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <p class="reveal" style="font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">✅ Topik yang SEMUA kompetitor punya (wajib ada)</p>
+        <div class="reveal card" style="font-size:.81rem;line-height:1.9;color:var(--text2);">
+          <div>📌 Rekrutmen & Seleksi Karyawan</div>
+          <div>📌 Administrasi HR & Personalia</div>
+          <div>📌 Kompensasi, Benefit & Payroll</div>
+          <div>📌 Performance Management & KPI</div>
+          <div>📌 Training & Development dasar</div>
+          <div>📌 Industrial Relation & Regulasi Kerja</div>
+        </div>
+      </div>
+      <div>
+        <p class="reveal" style="font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">🔥 Topik EKSKLUSIF Obrak-Abrik 2027 (differentiator)</p>
+        <div class="reveal card" style="border-left:3px solid #F97316;font-size:.81rem;line-height:1.9;color:var(--text2);">
+          <div>🧪 <strong style="color:#F97316;">Psikometri & Asesmen Psikologi Kerja</strong></div>
+          <div>🧠 <strong style="color:#F97316;">Behavioral Event Interview (BEI) + Profiling</strong></div>
+          <div>📊 People Analytics & HR Data-Driven Decision</div>
+          <div>🤖 AI dalam Rekrutmen & Screening Modern</div>
+          <div>🏢 Organizational Development & Culture</div>
+          <div>💬 Konsultasi Kasus HR Nyata (Case Clinic)</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="margin-top:.9rem;display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;">
+      <div style="background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);border-radius:9px;padding:.7rem .9rem;">
+        <p style="color:#F97316;font-family:var(--font-d);font-size:.85rem;margin-bottom:.3rem;">🔰 Tier 1 · Foundation</p>
+        <p style="color:var(--muted);font-size:.77rem;">Rekrutmen, Admin HR, Payroll Dasar, Psikologi Kerja Intro</p>
+        <p style="color:#F97316;font-weight:700;font-size:.9rem;margin-top:.4rem;">Rp 299k</p>
+      </div>
+      <div style="background:rgba(20,184,166,.07);border:1px solid rgba(20,184,166,.2);border-radius:9px;padding:.7rem .9rem;">
+        <p style="color:#14B8A6;font-family:var(--font-d);font-size:.85rem;margin-bottom:.3rem;">⭐ Tier 2 · Advanced</p>
+        <p style="color:var(--muted);font-size:.77rem;">Psikometri, Performance Mgmt, BEI, People Analytics + 2x Zoom Live</p>
+        <p style="color:#14B8A6;font-weight:700;font-size:.9rem;margin-top:.4rem;">Rp 599k</p>
+      </div>
+      <div style="background:rgba(254,243,199,.06);border:1px solid rgba(254,243,199,.15);border-radius:9px;padding:.7rem .9rem;">
+        <p style="color:#FEF3C7;font-family:var(--font-d);font-size:.85rem;margin-bottom:.3rem;">👑 Tier 3 · Mastermind</p>
+        <p style="color:var(--muted);font-size:.77rem;">Semua Tier 1+2 + AI dalam HR + OD + 4x Zoom + 1x Konsul 1-on-1</p>
+        <p style="color:#FEF3C7;font-weight:700;font-size:.9rem;margin-top:.4rem;">Rp 1.499k</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 6: TEAM ─── -->
+<div class="slide" data-slide="6">
+  <div class="mesh">
+    <div class="blob" style="width:400px;height:400px;top:-60px;left:-70px;background:#F97316;opacity:.09;"></div>
+    <div class="blob" style="width:300px;height:300px;bottom:-60px;right:-50px;background:#14B8A6;opacity:.08;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--or);margin-bottom:.4rem;">THE TEAM · PROJECT 2027</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.4rem,3vw,2.3rem);margin-bottom:1.3rem;">Tiga Keahlian, Satu Visi: <span style="color:#F97316;">Ngobrak-Abrik</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;">
+      <div class="reveal card">
+        <div style="font-size:2.3rem;margin-bottom:.7rem;">👨‍💼</div>
+        <p class="lbl" style="color:#F97316;margin-bottom:.2rem;">Co-Founder · Growth</p>
+        <h3 style="font-family:var(--font-d);font-size:1.1rem;margin-bottom:.3rem;">Ardi</h3>
+        <p style="color:var(--muted);font-size:.78rem;margin-bottom:.6rem;font-style:italic;">Digital Marketing & Distribution</p>
+        <ul style="color:var(--text2);font-size:.8rem;padding-left:1.1rem;line-height:1.9;">
+          <li>Agency label musik aktif</li>
+          <li>Manage multi-brand social media</li>
+          <li>Expertise paid & organic growth</li>
+          <li>Content pipeline & community</li>
+        </ul>
+      </div>
+      <div class="reveal card" style="border-color:rgba(20,184,166,.3);">
+        <div style="font-size:2.3rem;margin-bottom:.7rem;">🧪</div>
+        <p class="lbl" style="color:#14B8A6;margin-bottom:.2rem;">Co-Founder · Speaker Utama</p>
+        <h3 style="font-family:var(--font-d);font-size:1.1rem;margin-bottom:.3rem;">Dandy</h3>
+        <p style="color:var(--muted);font-size:.78rem;margin-bottom:.6rem;font-style:italic;">Psikolog Industri & HR Expert</p>
+        <ul style="color:var(--text2);font-size:.8rem;padding-left:1.1rem;line-height:1.9;">
+          <li>Founder excellent.id (biro psikologi)</li>
+          <li>Handle psikotest PT & sekolah</li>
+          <li>Praktisi HR aktif di korporat</li>
+          <li>Kredensial akademik Psikologi Industri</li>
+        </ul>
+      </div>
+      <div class="reveal card" style="border-color:rgba(254,243,199,.2);">
+        <div style="font-size:2.3rem;margin-bottom:.7rem;">⚙️</div>
+        <p class="lbl" style="color:#FEF3C7;margin-bottom:.2rem;">Co-Founder · Tech Lead</p>
+        <h3 style="font-family:var(--font-d);font-size:1.1rem;margin-bottom:.3rem;">Raka</h3>
+        <p style="color:var(--muted);font-size:.78rem;margin-bottom:.6rem;font-style:italic;">AI Automation & Platform Builder</p>
+        <ul style="color:var(--text2);font-size:.8rem;padding-left:1.1rem;line-height:1.9;">
+          <li>AI automation & prompt engineering</li>
+          <li>n8n workflow & LMS builder</li>
+          <li>Medical researcher & digital product</li>
+          <li>Vibe coding & API integration</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 7: TECH STACK DETAIL ─── -->
+<div class="slide" data-slide="7">
+  <div class="mesh">
+    <div class="blob" style="width:420px;height:420px;top:-80px;right:-60px;background:#14B8A6;opacity:.1;"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-50px;left:-40px;background:#F97316;opacity:.08;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--tl);margin-bottom:.4rem;">TECH STACK · DETAIL INFRASTRUKTUR</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.3rem,2.8vw,2.1rem);margin-bottom:1rem;">Platform Architecture — Built by Raka</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <p class="reveal" style="font-size:.73rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">🖥️ Frontend & Hosting</p>
+        <div class="reveal card" style="font-size:.81rem;line-height:2;margin-bottom:.7rem;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">🌐 Landing Page</span><span style="color:#F97316;">HTML/CSS + Vercel (free tier)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">🎓 LMS Platform</span><span style="color:#F97316;">Moodle self-hosted / Teachable</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">☁️ VPS Hosting</span><span style="color:#F97316;">Niagahoster / Contabo (EU)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">🔒 SSL + CDN</span><span style="color:#F97316;">Cloudflare (free)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">📹 Video Hosting</span><span style="color:#F97316;">Bunny.net / YouTube Unlisted</span></div>
+        </div>
+        <p class="reveal" style="font-size:.73rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">⚙️ Automation & Backend</p>
+        <div class="reveal card" style="font-size:.81rem;line-height:2;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">🔄 Workflow</span><span style="color:#14B8A6;">n8n self-hosted (VPS)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">💳 Payment</span><span style="color:#14B8A6;">Midtrans / Xendit API</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">📊 Database</span><span style="color:#14B8A6;">MySQL / PostgreSQL (VPS)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">📧 Email Transaksional</span><span style="color:#14B8A6;">Brevo (free 300/day)</span></div>
+        </div>
+      </div>
+      <div>
+        <p class="reveal" style="font-size:.73rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">🤖 AI Layer Stack</p>
+        <div class="reveal card" style="font-size:.81rem;line-height:2;margin-bottom:.7rem;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">🧠 LLM Utama</span><span style="color:#F97316;">DeepSeek V4-Flash API</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">🔁 LLM Fallback</span><span style="color:#F97316;">Claude Haiku 4.5</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">💬 Chatbot Interface</span><span style="color:#F97316;">WhatsApp via Baileys/WAHA</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">📎 Embedding/RAG</span><span style="color:#F97316;">DeepSeek + Qdrant (VPS)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">🔗 Orchestration</span><span style="color:#F97316;">n8n AI Agent Node</span></div>
+        </div>
+        <p class="reveal" style="font-size:.73rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">📱 Live Class & Community</p>
+        <div class="reveal card" style="font-size:.81rem;line-height:2;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">📹 Live Class</span><span style="color:#14B8A6;">Zoom Pro Webinar</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">👥 Komunitas</span><span style="color:#14B8A6;">Telegram Group + Bot</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">📅 Booking 1-on-1</span><span style="color:#14B8A6;">Calendly / n8n custom</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text2);">📊 Analytics</span><span style="color:#14B8A6;">Google Analytics + Hotjar</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 8: API USAGE DETAIL ─── -->
+<div class="slide" data-slide="8">
+  <div class="mesh">
+    <div class="blob" style="width:400px;height:400px;top:-80px;left:-60px;background:#F97316;opacity:.1;"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-50px;right:-40px;background:#14B8A6;opacity:.07;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--or);margin-bottom:.4rem;">API USAGE · DEEP DIVE</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.3rem,2.8vw,2.1rem);margin-bottom:.9rem;">DeepSeek vs Claude — Kalkulasi Nyata</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <div class="reveal card" style="border-left:3px solid #14B8A6;margin-bottom:.8rem;">
+          <p style="color:#14B8A6;font-family:var(--font-d);font-size:.88rem;margin-bottom:.6rem;">DeepSeek V4-Flash (Primary)</p>
+          <div style="font-size:.8rem;line-height:1.9;color:var(--text2);">
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.3rem;margin-bottom:.3rem;"><span>Input (cache miss)</span><span style="color:#14B8A6;font-weight:600;">$0.14 / 1M token</span></div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.3rem;margin-bottom:.3rem;"><span>Input (cache hit)</span><span style="color:#14B8A6;font-weight:600;">$0.0028 / 1M token</span></div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.3rem;margin-bottom:.3rem;"><span>Output</span><span style="color:#14B8A6;font-weight:600;">$0.28 / 1M token</span></div>
+            <div style="display:flex;justify-content:space-between;"><span>Context window</span><span style="color:#14B8A6;font-weight:600;">64K token</span></div>
+          </div>
+          <p style="color:var(--muted);font-size:.75rem;margin-top:.5rem;font-style:italic;">Gunakan untuk: chatbot Q&A materi, ringkasan modul, adaptive quiz, WhatsApp funnel</p>
+        </div>
+        <div class="reveal card" style="border-left:3px solid #F97316;">
+          <p style="color:#F97316;font-family:var(--font-d);font-size:.88rem;margin-bottom:.6rem;">Claude Haiku 4.5 (Fallback)</p>
+          <div style="font-size:.8rem;line-height:1.9;color:var(--text2);">
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.3rem;margin-bottom:.3rem;"><span>Input</span><span style="color:#F97316;font-weight:600;">$1.00 / 1M token</span></div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.3rem;margin-bottom:.3rem;"><span>Output</span><span style="color:#F97316;font-weight:600;">$5.00 / 1M token</span></div>
+            <div style="display:flex;justify-content:space-between;"><span>Kelebihan</span><span style="color:#F97316;font-weight:600;">Bahasa Indonesia lebih natural</span></div>
+          </div>
+          <p style="color:var(--muted);font-size:.75rem;margin-top:.5rem;font-style:italic;">Gunakan untuk: evaluasi esai, feedback kualitatif kompleks, konten kurasi premium</p>
+        </div>
+      </div>
+      <div>
+        <p class="reveal" style="font-size:.73rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">Estimasi Token Usage per Use Case</p>
+        <div class="reveal" style="font-size:.79rem;line-height:1;margin-bottom:.7rem;">
+          <div style="margin-bottom:.6rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.2rem;"><span style="color:var(--text2);">Chatbot tanya materi (1 query)</span><span style="color:#F97316;">~500–1K token</span></div>
+            <div class="bar-track"><div class="bar-fill" data-width="25"></div></div>
+          </div>
+          <div style="margin-bottom:.6rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.2rem;"><span style="color:var(--text2);">Generate ringkasan modul (1 modul)</span><span style="color:#F97316;">~2–4K token</span></div>
+            <div class="bar-track"><div class="bar-fill" data-width="50"></div></div>
+          </div>
+          <div style="margin-bottom:.6rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.2rem;"><span style="color:var(--text2);">Adaptive quiz 5 soal</span><span style="color:#F97316;">~1.5–3K token</span></div>
+            <div class="bar-track"><div class="bar-fill" data-width="35"></div></div>
+          </div>
+          <div style="margin-bottom:.6rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.2rem;"><span style="color:var(--text2);">WhatsApp lead nurturing (1 flow)</span><span style="color:#F97316;">~800–1.5K token</span></div>
+            <div class="bar-track"><div class="bar-fill" data-width="20"></div></div>
+          </div>
+          <div style="margin-bottom:.6rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.2rem;"><span style="color:var(--text2);">Debugging & dev iteration (per sesi)</span><span style="color:#F97316;">~5–20K token</span></div>
+            <div class="bar-track"><div class="bar-fill" data-width="75"></div></div>
+          </div>
+        </div>
+        <div class="reveal" style="background:rgba(20,184,166,.08);border:1px solid rgba(20,184,166,.25);border-radius:10px;padding:.8rem 1rem;">
+          <p style="color:#14B8A6;font-family:var(--font-d);font-size:.85rem;margin-bottom:.4rem;">💡 Strategi Caching — Kunci Efisiensi</p>
+          <p style="color:var(--muted);font-size:.78rem;margin:0;">System prompt + kurikulum context di-cache prefix. Pertanyaan berulang hit cache = <strong style="color:#14B8A6;">$0.0028 vs $0.14</strong>. Hemat 98% untuk query berulang. Raka set ini dari day-1.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 9: COST BREAKDOWN DETAIL ─── -->
+<div class="slide" data-slide="9">
+  <div class="mesh">
+    <div class="blob" style="width:420px;height:420px;top:-80px;right:-60px;background:#F97316;opacity:.1;"></div>
+    <div class="blob" style="width:280px;height:280px;bottom:-50px;left:-40px;background:#14B8A6;opacity:.07;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--or);margin-bottom:.4rem;">COST BREAKDOWN · SETUP + MAINTENANCE</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.3rem,2.8vw,2.1rem);margin-bottom:.9rem;">Biaya Awal & Operasional Detail</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <p class="reveal" style="font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:#F97316;margin-bottom:.5rem;">💰 Setup Cost (One-Time)</p>
+        <div class="reveal" style="background:rgba(255,255,255,.03);border-radius:10px;overflow:hidden;margin-bottom:.6rem;">
+          <div class="cost-row"><span style="color:var(--text2);">Domain (.id 1 tahun)</span><span style="color:#F97316;font-weight:600;">Rp 200k</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">VPS Niagahoster (2GB RAM)</span><span style="color:#F97316;font-weight:600;">Rp 800k/thn</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Setup Moodle LMS + konfigurasi</span><span style="color:#F97316;font-weight:600;">Rp 0 (Raka)</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Landing page design & dev</span><span style="color:#F97316;font-weight:600;">Rp 0 (Raka)</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">n8n self-hosted setup</span><span style="color:#F97316;font-weight:600;">Rp 0 (Raka)</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Zoom Pro (annual)</span><span style="color:#F97316;font-weight:600;">~Rp 2.4jt</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Produksi video (kamera, mic, ring light)</span><span style="color:#F97316;font-weight:600;">Rp 2–4jt</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">DeepSeek API credit awal (dev+debug)</span><span style="color:#F97316;font-weight:600;">~$50 (Rp 800k)</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Branding assets (Canva Pro)</span><span style="color:#F97316;font-weight:600;">Rp 600k/thn</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Marketing launch (Meta Ads)</span><span style="color:#F97316;font-weight:600;">Rp 1–2jt</span></div>
+          <div style="padding:.6rem .8rem;background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(20,184,166,.1));display:flex;justify-content:space-between;">
+            <span style="font-family:var(--font-d);color:var(--text);">TOTAL SETUP</span>
+            <span style="font-family:var(--font-d);color:#F97316;font-size:1rem;" class="gp">Rp 7.8–11jt</span>
+          </div>
+        </div>
+        <p style="color:var(--muted);font-size:.75rem;">Split 3 orang = <strong style="color:#14B8A6;">~Rp 2.6–3.7jt/orang</strong></p>
+      </div>
+      <div>
+        <p class="reveal" style="font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:#14B8A6;margin-bottom:.5rem;">🔄 Monthly Maintenance</p>
+        <div class="reveal" style="background:rgba(255,255,255,.03);border-radius:10px;overflow:hidden;margin-bottom:.6rem;">
+          <div style="padding:.4rem .8rem;background:rgba(20,184,166,.12);font-size:.75rem;color:#14B8A6;font-weight:700;">FASE 1: 0–50 user (Bulan 1–3)</div>
+          <div class="cost-row"><span style="color:var(--text2);">VPS hosting</span><span style="color:#14B8A6;">Rp 67k</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">DeepSeek API (dev mode, banyak iterasi)</span><span style="color:#14B8A6;">~Rp 250k ($15)</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Zoom Pro (per bulan)</span><span style="color:#14B8A6;">Rp 200k</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Bunny.net video CDN</span><span style="color:#14B8A6;">~Rp 30k</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Payment gateway (per-trx fee)</span><span style="color:#14B8A6;">1.5–2.9%</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Marketing (Meta Ads)</span><span style="color:#14B8A6;">Rp 500k–1jt</span></div>
+          <div style="padding:.5rem .8rem;display:flex;justify-content:space-between;border-top:1px solid rgba(20,184,166,.2);">
+            <span style="font-family:var(--font-d);color:var(--text);font-size:.9rem;">Total/bulan</span>
+            <span style="font-family:var(--font-d);color:#14B8A6;">~Rp 1–1.6jt</span>
+          </div>
+        </div>
+        <div class="reveal" style="background:rgba(255,255,255,.03);border-radius:10px;overflow:hidden;">
+          <div style="padding:.4rem .8rem;background:rgba(249,115,22,.12);font-size:.75rem;color:#F97316;font-weight:700;">FASE 2: 100–300 user (Bulan 4–9)</div>
+          <div class="cost-row"><span style="color:var(--text2);">VPS upgrade (4GB RAM)</span><span style="color:#F97316;">Rp 150k</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">DeepSeek API (produksi, 80% cache)</span><span style="color:#F97316;">~Rp 500k ($30–45)</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Qdrant vector DB (cloud starter)</span><span style="color:#F97316;">Rp 0–200k</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Zoom + ops tools</span><span style="color:#F97316;">Rp 300k</span></div>
+          <div class="cost-row"><span style="color:var(--text2);">Content + Marketing</span><span style="color:#F97316;">Rp 1–2jt</span></div>
+          <div style="padding:.5rem .8rem;display:flex;justify-content:space-between;border-top:1px solid rgba(249,115,22,.2);">
+            <span style="font-family:var(--font-d);color:var(--text);font-size:.9rem;">Total/bulan</span>
+            <span style="font-family:var(--font-d);color:#F97316;">~Rp 2.1–3.2jt</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 10: REVENUE SIMULATION ─── -->
+<div class="slide" data-slide="10">
+  <div class="mesh">
+    <div class="blob" style="width:450px;height:450px;top:-90px;right:-70px;background:#F97316;opacity:.11;"></div>
+    <div class="blob" style="width:300px;height:300px;bottom:-60px;left:-50px;background:#14B8A6;opacity:.08;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--or);margin-bottom:.4rem;">SIMULASI REVENUE</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.3rem,2.8vw,2.1rem);margin-bottom:.9rem;">Proyeksi Finansial 12 Bulan</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-bottom:.9rem;">
+      <div class="reveal card" style="text-align:center;">
+        <p style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:.3rem;">Konservatif</p>
+        <div style="font-family:var(--font-d);font-size:1.5rem;color:#14B8A6;" data-count="18" data-pre="Rp " data-suf="jt/bln">Rp 0</div>
+        <p style="color:var(--muted);font-size:.76rem;margin:.2rem 0;">30 user/bln, mix tier</p>
+        <div style="font-size:.78rem;color:var(--text2);">Profit bersih: <span style="color:#14B8A6;">~Rp 16.5jt</span></div>
+      </div>
+      <div class="reveal" style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);border-radius:14px;padding:1rem;text-align:center;">
+        <p style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:.3rem;">Moderat</p>
+        <div style="font-family:var(--font-d);font-size:1.5rem;color:#F97316;" class="gp" data-count="45" data-pre="Rp " data-suf="jt/bln">Rp 0</div>
+        <p style="color:var(--muted);font-size:.76rem;margin:.2rem 0;">70 user + 2 B2B client</p>
+        <div style="font-size:.78rem;color:var(--text2);">Profit bersih: <span style="color:#F97316;">~Rp 42jt</span></div>
+      </div>
+      <div class="reveal card" style="text-align:center;">
+        <p style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:.3rem;">Optimistis</p>
+        <div style="font-family:var(--font-d);font-size:1.5rem;color:#FEF3C7;" data-count="90" data-pre="Rp " data-suf="jt/bln">Rp 0</div>
+        <p style="color:var(--muted);font-size:.76rem;margin:.2rem 0;">150 user + 5 B2B</p>
+        <div style="font-size:.78rem;color:var(--text2);">Profit bersih: <span style="color:#FEF3C7;">~Rp 86jt</span></div>
+      </div>
+    </div>
+    <div class="reveal card" style="margin-bottom:.7rem;">
+      <p style="color:var(--text2);font-size:.82rem;font-weight:600;margin-bottom:.5rem;">📊 Breakdown Moderat (70 user + 2 B2B):</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;font-size:.79rem;color:var(--muted);">
+        <div>• 20 Tier 1 × Rp 299k = <span style="color:var(--text2);">Rp 6jt</span></div>
+        <div>• 35 Tier 2 × Rp 599k = <span style="color:var(--text2);">Rp 21jt</span></div>
+        <div>• 15 Tier 3 × Rp 1.499k = <span style="color:var(--text2);">Rp 22.5jt</span></div>
+        <div>• 2 B2B in-house × Rp 5jt = <span style="color:var(--text2);">Rp 10jt</span></div>
+        <div>• Add-on 1-on-1 = <span style="color:var(--text2);">Rp 3jt</span></div>
+        <div>• Opex: <span style="color:#F97316;">Rp 3.2jt</span> | API: <span style="color:#14B8A6;">~$30</span></div>
+      </div>
+    </div>
+    <div class="reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;">
+      <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:9px;padding:.6rem .8rem;text-align:center;">
+        <div style="font-family:var(--font-d);color:#F97316;font-size:1.1rem;">≤ 3 bln</div>
+        <div style="color:var(--muted);font-size:.72rem;">BEP Moderat</div>
+      </div>
+      <div style="background:rgba(20,184,166,.08);border:1px solid rgba(20,184,166,.2);border-radius:9px;padding:.6rem .8rem;text-align:center;">
+        <div style="font-family:var(--font-d);color:#14B8A6;font-size:1.1rem;">Rp 50–150k</div>
+        <div style="color:var(--muted);font-size:.72rem;">Est. CAC/user</div>
+      </div>
+      <div style="background:rgba(254,243,199,.07);border:1px solid rgba(254,243,199,.15);border-radius:9px;padding:.6rem .8rem;text-align:center;">
+        <div style="font-family:var(--font-d);color:#FEF3C7;font-size:1.1rem;">8–15%</div>
+        <div style="color:var(--muted);font-size:.72rem;">Target Funnel CR</div>
+      </div>
+      <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:9px;padding:.6rem .8rem;text-align:center;">
+        <div style="font-family:var(--font-d);color:#F97316;font-size:1.1rem;">Rp 900k–2jt</div>
+        <div style="color:var(--muted);font-size:.72rem;">LTV/user/tahun</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 11: ROADMAP ─── -->
+<div class="slide" data-slide="11">
+  <div class="mesh">
+    <div class="blob" style="width:400px;height:400px;top:-80px;left:-60px;background:#F97316;opacity:.1;"></div>
+    <div class="blob" style="width:300px;height:300px;bottom:-60px;right:-50px;background:#14B8A6;opacity:.08;"></div>
+  </div>
+  <div class="content">
+    <p class="reveal lbl" style="color:var(--tl);margin-bottom:.4rem;">ROADMAP</p>
+    <h2 class="reveal hdg" style="font-size:clamp(1.3rem,2.8vw,2.1rem);margin-bottom:1.3rem;">Go-to-Market Plan · 12 Bulan</h2>
+    <div style="position:relative;padding-left:46px;">
+      <div class="tl-line"></div>
+      <div class="reveal" style="display:flex;gap:1rem;margin-bottom:.9rem;align-items:flex-start;">
+        <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:10px;padding:.75rem 1rem;flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;"><h4 style="font-family:var(--font-d);color:#F97316;font-size:.9rem;">Bulan 1–2 · BUILD</h4><span style="color:var(--muted);font-size:.75rem;">MVP Platform</span></div>
+          <p style="color:var(--text2);font-size:.8rem;">Raka build LMS + AI chatbot + n8n automation. Dandy rekam 8 modul Tier 1. Ardi setup IG/TikTok content pipeline & WhatsApp funnel.</p>
+        </div>
+      </div>
+      <div class="reveal" style="display:flex;gap:1rem;margin-bottom:.9rem;align-items:flex-start;">
+        <div style="background:rgba(20,184,166,.08);border:1px solid rgba(20,184,166,.2);border-radius:10px;padding:.75rem 1rem;flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;"><h4 style="font-family:var(--font-d);color:#14B8A6;font-size:.9rem;">Bulan 3–4 · LAUNCH</h4><span style="color:var(--muted);font-size:.75rem;">Beta → Paid</span></div>
+          <p style="color:var(--text2);font-size:.8rem;">Soft launch ke network Dandy (excellent.id) + HR Cirebon. Target 20–30 peserta batch pertama. Live Zoom class perdana Tier 1.</p>
+        </div>
+      </div>
+      <div class="reveal" style="display:flex;gap:1rem;margin-bottom:.9rem;align-items:flex-start;">
+        <div style="background:rgba(254,243,199,.05);border:1px solid rgba(254,243,199,.15);border-radius:10px;padding:.75rem 1rem;flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;"><h4 style="font-family:var(--font-d);color:#FEF3C7;font-size:.9rem;">Bulan 5–8 · SCALE</h4><span style="color:var(--muted);font-size:.75rem;">Tier 2+3 + B2B</span></div>
+          <p style="color:var(--text2);font-size:.8rem;">Rilis Tier 2 & 3. Kejar B2B korporat Cirebon (in-house training). 100+ user kumulatif. Affiliate trainer lokal mulai diaktifkan.</p>
+        </div>
+      </div>
+      <div class="reveal" style="display:flex;gap:1rem;align-items:flex-start;">
+        <div style="background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.15);border-radius:10px;padding:.75rem 1rem;flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;"><h4 style="font-family:var(--font-d);color:#F97316;font-size:.9rem;">Bulan 9–12 · EXPAND</h4><span style="color:var(--muted);font-size:.75rem;">Jawa Barat</span></div>
+          <p style="color:var(--text2);font-size:.8rem;">Ekspansi ke Bandung, Bekasi, Bogor. Obrak-Abrik 2027 jadi brand HR L&D regional Jabar. Siapkan vertical baru (Back Bisnis #2).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLIDE 12: CLOSING ─── -->
+<div class="slide" data-slide="12">
+  <div class="mesh">
+    <div class="blob" style="width:560px;height:560px;top:-120px;right:-100px;background:#F97316;opacity:.14;"></div>
+    <div class="blob" style="width:400px;height:400px;bottom:-100px;left:-80px;background:#14B8A6;opacity:.11;"></div>
+    <div class="blob" style="width:200px;height:200px;top:35%;left:42%;background:#FEF3C7;opacity:.07;"></div>
+  </div>
+  <canvas class="pc" style="position:absolute;inset:0;z-index:1;"></canvas>
+  <div class="content" style="text-align:center;">
+    <div class="reveal" style="font-size:72px;animation:float 3s ease-in-out infinite;">🔥</div>
+    <h2 class="reveal hdg" style="font-size:clamp(2rem,5vw,4rem);background:linear-gradient(135deg,#F97316,#FEF3C7,#14B8A6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:.5rem 0 .8rem;">Obrak-Abrik 2027</h2>
+    <p class="reveal" style="color:var(--text2);font-size:clamp(.9rem,1.5vw,1.15rem);max-width:600px;margin:0 auto 1.4rem;">Modal kecil. Expertise kuat. Pasar yang haus. Cirebon dulu — Jawa Barat berikutnya.</p>
+    <div class="reveal" style="display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.3rem;">
+      <div style="background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);border-radius:12px;padding:.75rem 1.3rem;text-align:center;">
+        <div style="font-family:var(--font-d);font-size:1.2rem;color:#F97316;" class="gp">Rp 7.8–11jt</div>
+        <div style="color:var(--muted);font-size:.75rem;">Setup Total</div>
+      </div>
+      <div style="background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.3);border-radius:12px;padding:.75rem 1.3rem;text-align:center;">
+        <div style="font-family:var(--font-d);font-size:1.2rem;color:#14B8A6;">Rp 1–3.2jt</div>
+        <div style="color:var(--muted);font-size:.75rem;">Opex/Bulan</div>
+      </div>
+      <div style="background:rgba(254,243,199,.08);border:1px solid rgba(254,243,199,.2);border-radius:12px;padding:.75rem 1.3rem;text-align:center;">
+        <div style="font-family:var(--font-d);font-size:1.2rem;color:#FEF3C7;">≤ 3 Bulan</div>
+        <div style="color:var(--muted);font-size:.75rem;">BEP Moderat</div>
+      </div>
+      <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:12px;padding:.75rem 1.3rem;text-align:center;">
+        <div style="font-family:var(--font-d);font-size:1.2rem;color:#F97316;">$30–45</div>
+        <div style="color:var(--muted);font-size:.75rem;">API Cost/100 Users</div>
+      </div>
+    </div>
+    <p class="reveal lbl" style="color:var(--muted);">Project 2027 · Ardi × Dandy × Raka · Cirebon → Jawa Barat → Indonesia</p>
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<div class="nav" id="nav">
+  <button class="nbtn" onclick="go(-1)">&#8249;</button>
+  <div class="dots" id="dots"></div>
+  <button class="nbtn" onclick="go(1)">&#8250;</button>
+  <span class="cnt" id="cnt">1 / 12</span>
+</div>
+
+<script>
+let cur=1;
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+const dotsEl=document.getElementById('dots');
+const cntEl=document.getElementById('cnt');
+
+for(let i=1;i<=total;i++){const d=document.createElement('div');d.className='dot'+(i===1?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d);}
+
+function goTo(n){
+  document.querySelector('.slide.active')?.classList.remove('active');
+  const s=document.querySelector(`.slide[data-slide="${n}"]`);
+  if(s){s.classList.add('active');anim(s);}
+  cur=n;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===n));
+  cntEl.textContent=n+' / '+total;
+}
+function go(d){let n=cur+d;if(n<1)n=total;if(n>total)n=1;goTo(n);}
+
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(1);}if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)go(d>0?1:-1);});
+
+function anim(slide){
+  slide.querySelectorAll('.reveal').forEach((el,i)=>{
+    el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(18px)';
+    el.offsetHeight;
+    const delay=i*0.075;
+    el.style.transition=`opacity .32s ease ${delay}s,transform .32s ease ${delay}s`;
+    el.style.opacity='1';el.style.transform='translateY(0)';
+  });
+  slide.querySelectorAll('[data-count]:not(.c)').forEach(el=>{
+    el.classList.add('c');
+    const t=+el.dataset.count,s=el.dataset.suf||'',p=el.dataset.pre||'';
+    let c=0;const step=t/40;
+    const tm=setInterval(()=>{c+=step;if(c>=t){c=t;clearInterval(tm);}el.textContent=p+Math.round(c).toLocaleString()+s;},30);
+  });
+  slide.querySelectorAll('.bar-fill:not(.fi)').forEach((b,i)=>{
+    b.classList.add('fi');b.style.width='0';b.style.transition=`width .5s ease ${i*.08}s`;
+    b.offsetHeight;b.style.width=b.dataset.width+'%';
+  });
+}
+
+function initParticles(canvas,interactive){
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;}
+  resize();
+  const count=interactive?55:18;
+  let mx=-9999,my=-9999;
+  const particles=Array.from({length:count},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height,
+    vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+    sz:Math.random()*2.3+.7,al:Math.random()*.3+.1
+  }));
+  if(interactive){canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});canvas.addEventListener('mouseleave',()=>{mx=-9999;my=-9999;});}
+  (function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      if(interactive){const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);if(dist<110){const f=(110-dist)/110*2;p.vx+=(dx/dist)*f*.09;p.vy+=(dy/dist)*f*.09;}}
+      p.vx*=.98;p.vy*=.98;p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+      if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);
+      ctx.fillStyle=`rgba(249,115,22,${p.al})`;ctx.fill();
+    });requestAnimationFrame(tick);
+  })();
+  window.addEventListener('resize',resize);
+}
+
+document.querySelectorAll('.pc').forEach(c=>initParticles(c,true));
+
+document.addEventListener('mousemove',e=>{
+  document.querySelectorAll('.slide.active').forEach(s=>{
+    s.style.setProperty('--mx',e.clientX+'px');s.style.setProperty('--my',e.clientY+'px');
+  });
+});
+
+// Init first slide
+anim(document.querySelector('.slide.active'));
+</script>
+</body>
+</html>
