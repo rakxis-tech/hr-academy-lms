@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Pricing from './pages/Pricing';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
+import CoursePlayer from './pages/CoursePlayer';
+import { useLocation } from 'react-router-dom';
 
 // Placeholder pages for routing
 const PlaceholderPage = ({ title }) => (
@@ -16,36 +18,54 @@ const PlaceholderPage = ({ title }) => (
   </div>
 );
 
+// Main App Layout Wrapper
+function AppLayout() {
+  const location = useLocation();
+  const isPlayerRoute = location.pathname.startsWith('/learn/');
+
+  if (isPlayerRoute) {
+    return (
+      <Routes>
+        <Route path="/learn/:slug/:moduleId/:lessonId" element={<CoursePlayer />} />
+      </Routes>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* Mesh Background — Gradient Blobs */}
+      <div className="mesh-bg">
+        <div className="blob blob--orange"></div>
+        <div className="blob blob--teal"></div>
+        <div className="blob blob--cream"></div>
+      </div>
+
+      {/* Noise Texture Overlay */}
+      <div className="noise-overlay"></div>
+
+      <Navbar />
+
+      {/* Main Content Area */}
+      <main style={{ flex: 1, marginTop: 'var(--nav-height)', position: 'relative', zIndex: 1 }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:slug" element={<CourseDetail />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/auth" element={<PlaceholderPage title="Login / Register" />} />
+          <Route path="/dashboard" element={<PlaceholderPage title="User Dashboard" />} />
+        </Routes>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        {/* Mesh Background — Gradient Blobs */}
-        <div className="mesh-bg">
-          <div className="blob blob--orange"></div>
-          <div className="blob blob--teal"></div>
-          <div className="blob blob--cream"></div>
-        </div>
-
-        {/* Noise Texture Overlay */}
-        <div className="noise-overlay"></div>
-
-        <Navbar />
-
-        {/* Main Content Area */}
-        <main style={{ flex: 1, marginTop: 'var(--nav-height)', position: 'relative', zIndex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/courses/:slug" element={<CourseDetail />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/auth" element={<PlaceholderPage title="Login / Register" />} />
-            <Route path="/dashboard" element={<PlaceholderPage title="User Dashboard" />} />
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
+      <AppLayout />
     </Router>
   );
 }
