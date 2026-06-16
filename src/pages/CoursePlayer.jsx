@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import { ChevronLeft, PlayCircle, CheckCircle2, Lock, Menu, X } from 'lucide-react';
-import { courses, canAccessModule } from '../data/courses';
+import { courses, canAccessModule, TIERS } from '../data/courses';
 import { mockUser } from '../data/testimonials';
+import UpgradeModal from '../components/ui/UpgradeModal';
 
 export default function CoursePlayer() {
   const { slug, moduleId, lessonId } = useParams();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [completedLessons, setCompletedLessons] = useState([]); // Temporary state for mock progress
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [targetUpgradeTier, setTargetUpgradeTier] = useState(2);
 
   // Find data
   const course = courses.find(c => c.slug === slug);
@@ -43,8 +46,18 @@ export default function CoursePlayer() {
     setSidebarOpen(false);
   };
 
+  const handleLockedClick = (requiredTier) => {
+    setTargetUpgradeTier(requiredTier);
+    setIsUpgradeModalOpen(true);
+  };
+
   return (
     <div className="course-player-layout" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--bg-deep)' }}>
+      <UpgradeModal 
+        isOpen={isUpgradeModalOpen} 
+        onClose={() => setIsUpgradeModalOpen(false)} 
+        targetTierId={targetUpgradeTier} 
+      />
       
       {/* ─── PLAYER TOP BAR ─── */}
       <header style={{ 
@@ -192,7 +205,7 @@ export default function CoursePlayer() {
                       return (
                         <li key={les.id} id={`lesson-${les.id}`}>
                           <button
-                            onClick={() => modAccess ? navigateToLesson(mod.id, les.id) : null}
+                            onClick={() => modAccess ? navigateToLesson(mod.id, les.id) : handleLockedClick(course.minTier)}
                             style={{ 
                               width: '100%',
                               textAlign: 'left',
@@ -202,11 +215,11 @@ export default function CoursePlayer() {
                               display: 'flex',
                               alignItems: 'flex-start',
                               gap: '0.75rem',
-                              cursor: modAccess ? 'pointer' : 'not-allowed',
+                              cursor: 'pointer',
                               color: isActiveLesson ? 'var(--orange)' : (modAccess ? 'var(--text-2)' : 'var(--text-muted)'),
                               transition: 'background 0.2s ease'
                             }}
-                            className={modAccess && !isActiveLesson ? 'hover-bg-glass' : ''}
+                            className={modAccess && !isActiveLesson ? 'hover-bg-glass' : (isActiveLesson ? '' : 'hover-bg-glass')}
                           >
                             <div style={{ marginTop: '2px', color: isCompleted ? 'var(--success)' : (isActiveLesson ? 'var(--orange)' : 'var(--text-muted)') }}>
                               {isCompleted ? <CheckCircle2 size={16} /> : (modAccess ? <PlayCircle size={16} /> : <Lock size={16} />)}
