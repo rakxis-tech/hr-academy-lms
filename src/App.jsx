@@ -4,6 +4,7 @@ import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Pricing from './pages/Pricing';
 import Courses from './pages/Courses';
+import CourseDetail from './pages/CourseDetail';
 
 // Placeholder pages for routing
 const PlaceholderPage = ({ title }) => (
@@ -36,6 +37,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:slug" element={<CourseDetail />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/auth" element={<PlaceholderPage title="Login / Register" />} />
             <Route path="/dashboard" element={<PlaceholderPage title="User Dashboard" />} />
