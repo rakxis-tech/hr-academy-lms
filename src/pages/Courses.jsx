@@ -94,7 +94,7 @@ export default function Courses() {
                   <div style={{ height: '160px', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                     <div style={{ fontSize: '4rem', opacity: 0.5 }}>{course.icon}</div>
                     <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-                      <span className={`badge badge--tier-${course.minTier}`}>{TIERS[course.minTier].name}</span>
+                      <span className={`badge badge--tier-${course.min_tier}`}>{TIERS[course.min_tier]?.name}</span>
                     </div>
                   </div>
                   

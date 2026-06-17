@@ -27,19 +27,8 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-// Main App Layout Wrapper
-function AppLayout() {
-  const location = useLocation();
-  const isPlayerRoute = location.pathname.startsWith('/learn/');
-
-  if (isPlayerRoute) {
-    return (
-      <Routes>
-        <Route path="/learn/:slug/:moduleId/:lessonId" element={<CoursePlayer />} />
-      </Routes>
-    );
-  }
-
+// Layout for public/marketing pages (with Navbar + Footer)
+function PublicLayout() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Mesh Background — Gradient Blobs */}
@@ -59,7 +48,6 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
-          <Route path="/courses/:slug" element={<CourseDetail />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={
@@ -78,6 +66,26 @@ function AppLayout() {
       <Footer />
     </div>
   );
+}
+
+// Main App Layout Router
+function AppLayout() {
+  const location = useLocation();
+  
+  // Learning routes use their own LearningLayout (no Navbar/Footer)
+  const isLearningRoute = location.pathname.startsWith('/learn/') || 
+    (location.pathname.startsWith('/courses/') && location.pathname.split('/').length > 2);
+
+  if (isLearningRoute) {
+    return (
+      <Routes>
+        <Route path="/courses/:slug" element={<CourseDetail />} />
+        <Route path="/learn/:slug/:moduleId/:lessonId" element={<CoursePlayer />} />
+      </Routes>
+    );
+  }
+
+  return <PublicLayout />;
 }
 
 function App() {
