@@ -1,12 +1,46 @@
 import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { Play, Clock, Star, CheckCircle2, Lock, Unlock, ArrowRight } from 'lucide-react';
-import { courses, TIERS, getCourseStats } from '../data/courses';
+import { TIERS, getCourseStats } from '../data/courses';
 import { instructors } from '../data/testimonials';
+import { supabase } from '../lib/supabase';
 
 export default function CourseDetail() {
   const { slug } = useParams();
-  const course = courses.find(c => c.slug === slug);
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCourse() {
+      const { data, error } = await supabase
+        .from('courses')
+        .select(`
+          *,
+          modules (
+            *,
+            lessons (*)
+          )
+        `)
+        .eq('slug', slug)
+        .single();
+        
+      if (!error && data) {
+        // Sort modules and lessons by order
+        data.modules.sort((a, b) => a.order - b.order);
+        data.modules.forEach(m => {
+          if(m.lessons) m.lessons.sort((a, b) => a.order - b.order);
+        });
+        setCourse(data);
+      }
+      setLoading(false);
+    }
+    fetchCourse();
+  }, [slug]);
   
+  if (loading) {
+    return <div className="section container text-center" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
+  }
+
   if (!course) {
     return (
       <div className="section container text-center" style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
@@ -19,7 +53,7 @@ export default function CourseDetail() {
   }
 
   const stats = getCourseStats(course);
-  const tierInfo = TIERS[course.minTier];
+  const tierInfo = TIERS[course.min_tier];
   const instructor = instructors.find(i => i.name === course.instructor) || instructors[0];
 
   return (
@@ -31,7 +65,7 @@ export default function CourseDetail() {
           {/* Main Info */}
           <div>
             <div className="flex gap-sm items-center" style={{ marginBottom: '1.5rem' }}>
-              <span className={`badge badge--tier-${course.minTier}`}>{tierInfo.name}</span>
+              <span className={`badge badge--tier-${course.min_tier}`}>{tierInfo.name}</span>
               <span className="text-muted" style={{ fontSize: '0.9rem' }}>•</span>
               <span className="text-muted" style={{ fontSize: '0.9rem' }}>{course.level}</span>
             </div>
@@ -59,7 +93,7 @@ export default function CourseDetail() {
 
           {/* Sidebar / Instructor & Pricing Preview */}
           <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
-            <div className={`card card--tier-${course.minTier}`} style={{ padding: '2rem', marginBottom: '1.5rem' }}>
+            <div className={`card card--tier-${course.min_tier}`} style={{ padding: '2rem', marginBottom: '1.5rem' }}>
               <p className="label" style={{ marginBottom: '0.5rem', color: `var(--${tierInfo.color})` }}>TERMASUK DALAM PAKET</p>
               <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{tierInfo.name}</h3>
               <div className="font-display" style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>{tierInfo.priceLabel}</div>
@@ -77,7 +111,7 @@ export default function CourseDetail() {
                   <span>AI Chatbot Assistant</span>
                 </li>
               </ul>
-              <Link to="/pricing" className={`btn btn--full ${course.minTier === 1 ? 'btn--secondary' : course.minTier === 2 ? 'btn--teal' : 'btn--primary'}`}>
+              <Link to="/pricing" className={`btn btn--full ${course.min_tier === 1 ? 'btn--secondary' : course.min_tier === 2 ? 'btn--teal' : 'btn--primary'}`}>
                 Lihat Semua Paket
               </Link>
             </div>
@@ -118,11 +152,11 @@ export default function CourseDetail() {
                       Modul {modIdx + 1}: {mod.title}
                     </h4>
                     <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-                      {mod.lessons.length} Lesson
+                      {mod.lessons?.length || 0} Lesson
                     </div>
                   </div>
                   <div>
-                    {mod.isFreePreview ? (
+                    {mod.is_free_preview ? (
                       <span className="badge badge--beginner">Free Preview</span>
                     ) : (
                       <span className="badge badge--locked flex items-center gap-xs">
@@ -134,13 +168,13 @@ export default function CourseDetail() {
                 
                 {/* Lesson List */}
                 <ul style={{ padding: '0.5rem 0' }}>
-                  {mod.lessons.map((lesson, lesIdx) => (
+                  {mod.lessons && mod.lessons.map((lesson, lesIdx) => (
                     <li key={lesson.id} className="flex justify-between items-center" style={{ padding: '0.75rem 1.5rem', borderBottom: lesIdx < mod.lessons.length - 1 ? '1px solid var(--border)' : 'none' }}>
                       <div className="flex items-center gap-sm">
-                        <div style={{ color: mod.isFreePreview ? 'var(--teal)' : 'var(--text-muted)' }}>
-                          {mod.isFreePreview ? <Play size={16} /> : <Lock size={16} />}
+                        <div style={{ color: mod.is_free_preview ? 'var(--teal)' : 'var(--text-muted)' }}>
+                          {mod.is_free_preview ? <Play size={16} /> : <Lock size={16} />}
                         </div>
-                        <span style={{ color: mod.isFreePreview ? 'var(--text)' : 'var(--text-muted)' }}>{lesson.title}</span>
+                        <span style={{ color: mod.is_free_preview ? 'var(--text)' : 'var(--text-muted)' }}>{lesson.title}</span>
                       </div>
                       <div className="text-muted" style={{ fontSize: '0.85rem' }}>
                         {lesson.duration}m

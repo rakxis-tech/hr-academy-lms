@@ -1,18 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PlayCircle, Clock, Award, MessageCircle, Calendar, ArrowUpRight, CheckCircle2, Lock } from 'lucide-react';
-import { courses, TIERS } from '../data/courses';
-import { mockUser } from '../data/testimonials';
+import { TIERS } from '../data/courses';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 export default function Dashboard() {
-  // Allow toggling tier for demo purposes
-  const [currentTier, setCurrentTier] = useState(mockUser.tier);
+  const { user, profile } = useAuth();
+  const currentTier = profile?.tier || 1;
   const tierInfo = TIERS[currentTier];
 
-  const inProgressCourses = [
-    { ...courses[0], progress: 65, lastLesson: 'M2: Menyusun job description efektif' },
-    { ...courses[2], progress: 20, lastLesson: 'M1: Total rewards concept' }
-  ];
+  const [inProgressCourses, setInProgressCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      if (!user) return;
+      const { data } = await supabase
+        .from('courses')
+        .select('*, modules(id, lessons(id))')
+        .lte('min_tier', currentTier)
+        .limit(2);
+        
+      if (data) {
+        const formatted = data.map(c => ({
+          ...c,
+          progress: 0,
+          lastLesson: 'Mulai Pelajaran Pertama'
+        }));
+        setInProgressCourses(formatted);
+      }
+      setLoading(false);
+    }
+    loadData();
+  }, [user, currentTier]);
 
   return (
     <div className="dashboard-page">
@@ -22,10 +43,10 @@ export default function Dashboard() {
           <div className="flex flex-wrap gap-lg justify-between items-end">
             <div className="flex items-center gap-md">
               <div className="avatar avatar--xl flex items-center justify-center" style={{ background: 'var(--orange-subtle)', color: 'var(--orange)', fontSize: '2.5rem' }}>
-                {mockUser.avatar}
+                {profile?.avatar_url || '👤'}
               </div>
               <div>
-                <h1 style={{ fontSize: '2rem', marginBottom: '0.2rem' }}>Halo, {mockUser.name}! 👋</h1>
+                <h1 style={{ fontSize: '2rem', marginBottom: '0.2rem' }}>Halo, {profile?.full_name?.split(' ')[0] || 'User'}! 👋</h1>
                 <p className="text-muted" style={{ fontSize: '1rem' }}>Selamat datang kembali di ruang belajar Anda.</p>
               </div>
             </div>
@@ -44,21 +65,6 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-
-          {/* DEMO TOOL: Tier Switcher */}
-          <div style={{ marginTop: '1.5rem', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', display: 'inline-flex', gap: '0.5rem', alignItems: 'center' }}>
-            <span className="text-muted" style={{ fontSize: '0.8rem', marginRight: '0.5rem' }}>Demo Tier Switcher:</span>
-            {[1, 2, 3].map(t => (
-              <button 
-                key={t}
-                onClick={() => setCurrentTier(t)}
-                className={`btn btn--sm ${currentTier === t ? 'btn--primary' : 'btn--ghost'}`}
-                style={{ padding: '0.2rem 0.8rem', fontSize: '0.8rem' }}
-              >
-                Tier {t}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -76,30 +82,44 @@ export default function Dashboard() {
             </div>
 
             <div className="flex flex-col gap-md">
-              {inProgressCourses.map(course => (
-                <div key={course.id} className="card flex gap-md" style={{ padding: '1rem', alignItems: 'center' }}>
-                  <div style={{ width: '120px', height: '80px', background: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>
-                    {course.icon}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ fontSize: '1.1rem', marginBottom: '0.2rem' }}>{course.title}</h3>
-                    <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '0.8rem' }}>Selanjutnya: {course.lastLesson}</p>
-                    
-                    {/* Progress Bar */}
-                    <div className="flex items-center gap-sm">
-                      <div style={{ flex: 1, height: '6px', background: 'var(--surface-hover)', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${course.progress}%`, background: 'var(--orange)', borderRadius: '3px' }}></div>
+              {loading ? (
+                <div className="text-center text-muted" style={{ padding: '2rem 0' }}>Memuat progress belajar...</div>
+              ) : inProgressCourses.length > 0 ? (
+                inProgressCourses.map(course => (
+                  <div key={course.id} className="card flex gap-md" style={{ padding: '1rem', alignItems: 'center' }}>
+                    <div style={{ width: '120px', height: '80px', background: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>
+                      {course.icon}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ fontSize: '1.1rem', marginBottom: '0.2rem' }}>{course.title}</h3>
+                      <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '0.8rem' }}>Selanjutnya: {course.lastLesson}</p>
+                      
+                      {/* Progress Bar */}
+                      <div className="flex items-center gap-sm">
+                        <div style={{ flex: 1, height: '6px', background: 'var(--surface-hover)', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${course.progress}%`, background: 'var(--orange)', borderRadius: '3px' }}></div>
+                        </div>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{course.progress}%</span>
                       </div>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{course.progress}%</span>
+                    </div>
+                    <div>
+                      {course.modules?.[0]?.lessons?.[0]?.id ? (
+                        <Link to={`/learn/${course.slug}/${course.modules[0].id}/${course.modules[0].lessons[0].id}`} className="btn btn--primary" style={{ padding: '0.75rem' }}>
+                          <PlayCircle size={20} />
+                        </Link>
+                      ) : (
+                        <button className="btn btn--secondary" disabled style={{ padding: '0.75rem' }}>
+                          <PlayCircle size={20} />
+                        </button>
+                      )}
                     </div>
                   </div>
-                  <div>
-                    <Link to={`/learn/${course.slug}/${course.modules[0].id}/${course.modules[0].lessons[0].id}`} className="btn btn--primary" style={{ padding: '0.75rem' }}>
-                      <PlayCircle size={20} />
-                    </Link>
-                  </div>
+                ))
+              ) : (
+                <div className="card text-center text-muted" style={{ padding: '2rem 1rem' }}>
+                  Belum ada course yang sedang dipelajari.
                 </div>
-              ))}
+              )}
             </div>
 
             <h2 style={{ fontSize: '1.5rem', marginTop: '3rem', marginBottom: '1.5rem' }}>Sertifikat Saya</h2>

@@ -8,17 +8,24 @@ import CourseDetail from './pages/CourseDetail';
 import CoursePlayer from './pages/CoursePlayer';
 import Dashboard from './pages/Dashboard';
 import Auth from './pages/Auth';
-import { useLocation } from 'react-router-dom';
+import Admin from './pages/Admin';
+import { useLocation, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-// Placeholder pages for routing
-const PlaceholderPage = ({ title }) => (
-  <div className="section container" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <div className="text-center">
-      <h1 className="text-gradient" style={{ fontSize: '3rem', marginBottom: '1rem' }}>{title}</h1>
-      <p className="text-muted">Sedang dalam pengembangan...</p>
-    </div>
-  </div>
-);
+// Route Protection Wrappers
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
+  if (!user) return <Navigate to="/auth" replace />;
+  return children;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user, isAdmin, loading } = useAuth();
+  if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
+  if (!user || !isAdmin) return <Navigate to="/dashboard" replace />;
+  return children;
+};
 
 // Main App Layout Wrapper
 function AppLayout() {
@@ -55,7 +62,16 @@ function AppLayout() {
           <Route path="/courses/:slug" element={<CourseDetail />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin" element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          } />
         </Routes>
       </main>
 
@@ -66,9 +82,11 @@ function AppLayout() {
 
 function App() {
   return (
-    <Router>
-      <AppLayout />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppLayout />
+      </Router>
+    </AuthProvider>
   );
 }
 

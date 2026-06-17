@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import { ChevronLeft, PlayCircle, CheckCircle2, Lock, Menu, X } from 'lucide-react';
-import { courses, canAccessModule, TIERS } from '../data/courses';
-import { mockUser } from '../data/testimonials';
+import { courses as mockCourses, TIERS, canAccessModule } from '../data/courses';
 import UpgradeModal from '../components/ui/UpgradeModal';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 export default function CoursePlayer() {
   const { slug, moduleId, lessonId } = useParams();
@@ -14,31 +15,96 @@ export default function CoursePlayer() {
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [targetUpgradeTier, setTargetUpgradeTier] = useState(2);
 
-  // Find data
-  const course = courses.find(c => c.slug === slug);
+  const { user, profile } = useAuth();
+  
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Auto-scroll to active lesson in sidebar on load
+  useEffect(() => {
+    if (!loading && course) {
+      const activeEl = document.getElementById(`lesson-${lessonId}`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [lessonId, loading, course]);
+
+  useEffect(() => {
+    async function fetchData() {
+      // 1. Fetch Course Data
+      const { data: courseData, error: courseError } = await supabase
+        .from('courses')
+        .select(`
+          *,
+          modules (
+            *,
+            lessons (*)
+          )
+        `)
+        .eq('slug', slug)
+        .single();
+        
+      if (!courseError && courseData) {
+        courseData.modules.sort((a, b) => a.order - b.order);
+        courseData.modules.forEach(m => {
+          if (m.lessons) m.lessons.sort((a, b) => a.order - b.order);
+        });
+        setCourse(courseData);
+      }
+
+      // 2. Fetch Progress if logged in
+      if (user) {
+        const { data: progressData } = await supabase
+          .from('user_progress')
+          .select('lesson_id, completed')
+          .eq('user_id', user.id);
+          
+        if (progressData) {
+          setCompletedLessons(progressData.filter(p => p.completed).map(p => p.lesson_id));
+        }
+      }
+      
+      setLoading(false);
+    }
+    fetchData();
+  }, [slug, user]);
+
+  if (loading) {
+    return <div className="section container text-center">Loading player...</div>;
+  }
   
   if (!course) {
     return <div className="section container text-center">Course tidak ditemukan</div>;
   }
 
-  const module = course.modules.find(m => m.id === moduleId);
-  const lesson = module?.lessons.find(l => l.id === lessonId);
+  const module = course?.modules?.find(m => m.id === moduleId);
+  const lesson = module?.lessons?.find(l => l.id === lessonId);
 
-  // Check access logic
-  const hasAccess = module && canAccessModule(mockUser.tier, course, module);
+  // Check access logic based on user profile tier
+  const userTier = profile?.tier || 1;
+  
+  // Custom canAccessModule since we are using DB data
+  const hasAccess = module && (module.is_free_preview || userTier >= course.min_tier);
 
-  // Auto-scroll to active lesson in sidebar on load
-  useEffect(() => {
-    const activeEl = document.getElementById(`lesson-${lessonId}`);
-    if (activeEl) {
-      activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [lessonId]);
+  const toggleComplete = async (id) => {
+    const isCurrentlyCompleted = completedLessons.includes(id);
+    const newCompletedState = !isCurrentlyCompleted;
 
-  const toggleComplete = (id) => {
+    // Optimistic UI Update
     setCompletedLessons(prev => 
-      prev.includes(id) ? prev.filter(l => l !== id) : [...prev, id]
+      isCurrentlyCompleted ? prev.filter(l => l !== id) : [...prev, id]
     );
+
+    // Update DB
+    if (user) {
+      await supabase.from('user_progress').upsert({
+        user_id: user.id,
+        lesson_id: id,
+        completed: newCompletedState,
+        completed_at: newCompletedState ? new Date().toISOString() : null
+      });
+    }
   };
 
   const navigateToLesson = (targetModuleId, targetLessonId) => {
@@ -147,7 +213,7 @@ export default function CoursePlayer() {
               <div style={{ fontSize: '4rem', marginBottom: '1rem' }}><Lock size={64} className="text-muted" /></div>
               <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Materi Terkunci</h2>
               <p className="text-muted" style={{ maxWidth: '400px', marginBottom: '2rem' }}>
-                Anda membutuhkan paket langganan {TIERS[course.minTier].name} untuk mengakses modul ini. Upgrade tier Anda sekarang untuk membuka semua materi.
+                Anda membutuhkan paket langganan {TIERS[course.min_tier]?.name} untuk mengakses modul ini. Upgrade tier Anda sekarang untuk membuka semua materi.
               </p>
               <Link to="/pricing" className="btn btn--orange">Upgrade Tier</Link>
             </div>
@@ -183,7 +249,7 @@ export default function CoursePlayer() {
 
           <div style={{ padding: '0.5rem 0' }}>
             {course.modules.map((mod, mIdx) => {
-              const modAccess = canAccessModule(mockUser.tier, course, mod);
+              const modAccess = mod.is_free_preview || userTier >= course.min_tier;
               const isActiveModule = mod.id === moduleId;
 
               return (
@@ -192,8 +258,8 @@ export default function CoursePlayer() {
                     <h4 style={{ fontSize: '0.9rem', marginBottom: '0.2rem', color: modAccess ? 'var(--text)' : 'var(--text-muted)' }}>
                       M{mIdx + 1}: {mod.title}
                     </h4>
-                    {!modAccess && <span className="badge badge--locked" style={{ fontSize: '0.65rem' }}>Butuh Tier {course.minTier}</span>}
-                    {mod.isFreePreview && <span className="badge badge--beginner" style={{ fontSize: '0.65rem' }}>Free Preview</span>}
+                    {!modAccess && <span className="badge badge--locked" style={{ fontSize: '0.65rem' }}>Butuh Tier {course.min_tier}</span>}
+                    {mod.is_free_preview && <span className="badge badge--beginner" style={{ fontSize: '0.65rem' }}>Free Preview</span>}
                   </div>
                   
                   {/* Lessons in Module */}
@@ -205,7 +271,7 @@ export default function CoursePlayer() {
                       return (
                         <li key={les.id} id={`lesson-${les.id}`}>
                           <button
-                            onClick={() => modAccess ? navigateToLesson(mod.id, les.id) : handleLockedClick(course.minTier)}
+                            onClick={() => modAccess ? navigateToLesson(mod.id, les.id) : handleLockedClick(course.min_tier)}
                             style={{ 
                               width: '100%',
                               textAlign: 'left',

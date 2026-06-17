@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, ArrowRight, User } from 'lucide-react';
 import { TIERS } from '../data/courses';
+import { useAuth } from '../context/AuthContext';
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -11,21 +12,43 @@ export default function Auth() {
   const [step, setStep] = useState(1); // 1 = Basic Info, 2 = Select Tier (for register)
   const [selectedTier, setSelectedTier] = useState(2); // Default Advanced
   
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
+  const { signIn, signUp } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Mock login logic
-    navigate('/dashboard');
+    setErrorMsg('');
+    setLoading(true);
+    const { error } = await signIn(email, password);
+    if (error) {
+      setErrorMsg(error.message);
+      setLoading(false);
+    } else {
+      navigate('/dashboard');
+    }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     if (step === 1) {
       setStep(2);
     } else {
-      // Mock register & payment logic
-      navigate('/dashboard');
+      setErrorMsg('');
+      setLoading(true);
+      const { error } = await signUp(email, password, fullName, selectedTier);
+      if (error) {
+        setErrorMsg(error.message);
+        setLoading(false);
+      } else {
+        // Automatically sign in or redirect
+        navigate('/dashboard');
+      }
     }
   };
 
@@ -103,6 +126,7 @@ export default function Auth() {
                 ? 'Silakan masuk ke akun Anda untuk melanjutkan belajar.' 
                 : (step === 1 ? 'Daftar sekarang untuk akses kurikulum HR terbaik.' : 'Langkah terakhir sebelum Anda mulai belajar.')}
             </p>
+            {errorMsg && <div style={{ color: 'var(--error)', marginTop: '1rem', padding: '0.75rem', background: 'rgba(255,0,0,0.1)', borderRadius: 'var(--radius-sm)' }}>{errorMsg}</div>}
           </div>
 
           {/* LOGIN FORM */}
@@ -110,18 +134,18 @@ export default function Auth() {
             <form onSubmit={handleLogin} className="flex flex-col gap-md animate-fade-in">
               <div className="form-group">
                 <label className="label">Email Address</label>
-                <input type="email" className="input" placeholder="contoh@email.com" required defaultValue="demo@obrakabrik.id" />
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="input" placeholder="contoh@email.com" required />
               </div>
               <div className="form-group">
                 <div className="flex justify-between items-center">
                   <label className="label" style={{ marginBottom: 0 }}>Password</label>
                   <a href="#" className="text-teal" style={{ fontSize: '0.8rem' }}>Lupa password?</a>
                 </div>
-                <input type="password" className="input" placeholder="••••••••" required defaultValue="password123" />
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="input" placeholder="••••••••" required />
               </div>
               
-              <button type="submit" className="btn btn--primary btn--full btn--lg" style={{ marginTop: '1rem' }}>
-                Masuk ke Dashboard
+              <button type="submit" disabled={loading} className="btn btn--primary btn--full btn--lg" style={{ marginTop: '1rem' }}>
+                {loading ? 'Memproses...' : 'Masuk ke Dashboard'}
               </button>
               
               <p className="text-center text-muted" style={{ fontSize: '0.9rem', marginTop: '1rem' }}>
@@ -135,15 +159,15 @@ export default function Auth() {
             <form onSubmit={handleRegister} className="flex flex-col gap-md animate-fade-in">
               <div className="form-group">
                 <label className="label">Nama Lengkap</label>
-                <input type="text" className="input" placeholder="Budi Santoso" required />
+                <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} className="input" placeholder="Budi Santoso" required />
               </div>
               <div className="form-group">
                 <label className="label">Email Address</label>
-                <input type="email" className="input" placeholder="contoh@email.com" required />
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="input" placeholder="contoh@email.com" required />
               </div>
               <div className="form-group">
                 <label className="label">Password</label>
-                <input type="password" className="input" placeholder="Minimal 8 karakter" required />
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="input" placeholder="Minimal 8 karakter" required />
               </div>
               
               <button type="submit" className="btn btn--orange btn--full btn--lg" style={{ marginTop: '1rem' }}>
@@ -197,8 +221,8 @@ export default function Auth() {
                 <button type="button" onClick={() => setStep(1)} className="btn btn--ghost text-muted">
                   Kembali
                 </button>
-                <button type="submit" className={`btn btn--full btn--lg ${selectedTier === 2 ? 'btn--teal' : selectedTier === 3 ? 'btn--primary' : 'btn--secondary'}`} style={{ flex: 1 }}>
-                  Selesaikan Pembayaran
+                <button type="submit" disabled={loading} className={`btn btn--full btn--lg ${selectedTier === 2 ? 'btn--teal' : selectedTier === 3 ? 'btn--primary' : 'btn--secondary'}`} style={{ flex: 1 }}>
+                  {loading ? 'Memproses...' : 'Selesaikan Pembayaran'}
                 </button>
               </div>
             </form>

@@ -1,11 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Play, Clock, Star, ArrowRight } from 'lucide-react';
-import { courses, TIERS } from '../data/courses';
+import { TIERS } from '../data/courses';
+import { supabase } from '../lib/supabase';
 
 export default function Courses() {
   const [filter, setFilter] = useState('all'); // 'all', 'foundation', 'exclusive'
   const [search, setSearch] = useState('');
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCourses() {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*, modules(id)')
+        .order('id', { ascending: true });
+      
+      if (!error && data) {
+        setCourses(data);
+      }
+      setLoading(false);
+    }
+    fetchCourses();
+  }, []);
 
   const filteredCourses = courses.filter(course => {
     const matchFilter = filter === 'all' || course.category === filter;
@@ -58,7 +76,12 @@ export default function Courses() {
       {/* ─── COURSE GRID ─── */}
       <section className="section">
         <div className="container">
-          {filteredCourses.length === 0 ? (
+          {loading ? (
+            <div className="text-center text-muted" style={{ padding: '4rem 0' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
+              <p>Memuat materi pembelajaran...</p>
+            </div>
+          ) : filteredCourses.length === 0 ? (
             <div className="text-center text-muted" style={{ padding: '4rem 0' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
               <p>Materi tidak ditemukan. Coba kata kunci lain.</p>

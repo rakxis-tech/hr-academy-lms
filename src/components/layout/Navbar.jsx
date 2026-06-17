@@ -1,7 +1,16 @@
-import { Link } from 'react-router-dom';
-import { LogIn, Menu } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { LogIn, Menu, LogOut, Settings } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
+  const { user, profile, isAdmin, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <nav style={{
       position: 'fixed',
@@ -28,13 +37,37 @@ export default function Navbar() {
         <div className="flex items-center gap-lg hide-mobile">
           <Link to="/courses" style={{ color: 'var(--text-2)', fontSize: '0.9rem', fontWeight: 500 }}>Kurikulum</Link>
           <Link to="/pricing" style={{ color: 'var(--text-2)', fontSize: '0.9rem', fontWeight: 500 }}>Pricing</Link>
+          
           <div style={{ width: '1px', height: '24px', background: 'var(--border)' }}></div>
-          <Link to="/auth" className="btn btn--secondary btn--sm">
-            <LogIn size={16} /> Masuk
-          </Link>
-          <Link to="/auth?mode=register" className="btn btn--primary btn--sm">
-            Daftar Sekarang
-          </Link>
+          
+          {user ? (
+            <div className="flex items-center gap-md">
+              {isAdmin && (
+                <Link to="/admin" className="text-teal hover:text-white" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                  <Settings size={16} style={{ display: 'inline', marginRight: '4px' }} />
+                  Admin
+                </Link>
+              )}
+              <Link to="/dashboard" className="flex items-center gap-sm">
+                <div className="avatar avatar--sm flex items-center justify-center bg-surface-hover">
+                  {profile?.avatar_url || '👤'}
+                </div>
+                <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{profile?.full_name?.split(' ')[0] || 'User'}</span>
+              </Link>
+              <button onClick={handleSignOut} className="btn btn--ghost text-muted" style={{ padding: '0.5rem' }} title="Keluar">
+                <LogOut size={18} />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link to="/auth" className="btn btn--secondary btn--sm">
+                <LogIn size={16} /> Masuk
+              </Link>
+              <Link to="/auth?mode=register" className="btn btn--primary btn--sm">
+                Daftar Sekarang
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
